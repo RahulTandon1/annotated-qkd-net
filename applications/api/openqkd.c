@@ -1,3 +1,5 @@
+// this is the code from the issue-34 branch
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,10 +23,11 @@ static int get_urls(char** new_key_url, char** get_key_url, char** site_id) {
   const char *homedir;
   homedir = getenv("HOME");
   char filestr[256];
-  strcpy(filestr, homedir);
+  // strcpy(dest, source).
+  strcpy(filestr, homedir); // Copies homedir to filestr. 
   strcpy(filestr+strlen(homedir), str);
   filestr[strlen(homedir) + strlen(str)] = '\0';
-
+  // filestr = "HOME/.qkd/kms/kms.conf"
   fp = fopen(filestr, "r");
   if (!fp) {
     printf("**** Please check the configuration file %s\n", filestr);
@@ -32,7 +35,7 @@ static int get_urls(char** new_key_url, char** get_key_url, char** site_id) {
   }
 
   /*oauth*/
-  fgets(buffer, sizeof buffer, fp);
+  fgets(buffer, sizeof buffer, fp); // read sizeof(buffer) - 1 bytes/chars from fp into buffer
 
   /*newkey*/
   fgets(buffer, sizeof buffer, fp);
@@ -40,7 +43,13 @@ static int get_urls(char** new_key_url, char** get_key_url, char** site_id) {
     /*buffer includes the \n*/
     buffer[strlen(buffer) - 1] = '\0';
     *new_key_url = malloc(strlen(buffer) + 1);
+    
+    // copies 0 to the first strlen(buffer + 1) chars of new_key_url
+    // zero out new_key_url
     memset(*new_key_url, 0, strlen(buffer) + 1);
+    
+    // memcpy(dest, src, num_bytes)
+    // copy strlen(buffer) bytes from buffer to new_key_url
     memcpy(*new_key_url, buffer, strlen(buffer));
   }
 
@@ -69,7 +78,7 @@ static int get_urls(char** new_key_url, char** get_key_url, char** site_id) {
 
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
-  size_t realsize = size * nmemb;
+  size_t realsize = size * nmemb; // number of bytes in buffer
   MemoryStruct *mem = (MemoryStruct *)userp;
 
   mem->memory = realloc(mem->memory, mem->size + realsize + 1);
@@ -107,7 +116,7 @@ static int fetch(MemoryStruct *chunk, char* url, const char*post) {
       curl_easy_setopt(handle, CURLOPT_SSL_VERIFYHOST, 0L);
   }
   // Use hybrid key exchange
-  // curl_easy_setopt(handle, CURLOPT_SSL_EC_CURVES, "p521_kyber1024");
+  curl_easy_setopt(handle, CURLOPT_SSL_EC_CURVES, "p521_kyber1024");
 
   res = curl_easy_perform(handle);
  
