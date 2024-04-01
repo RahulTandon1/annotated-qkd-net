@@ -2,6 +2,9 @@ package com.uwaterloo.iqc.kms.component;
 
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.uwaterloo.qkd.qnl.utils.QNLConstants;
 import com.uwaterloo.qkd.qnl.utils.QNLRequest;
 import com.uwaterloo.qkd.qnl.utils.QNLResponse;
@@ -15,6 +18,10 @@ import io.netty.handler.timeout.ReadTimeoutException;
 
 public class ClientHandler
     extends SimpleChannelInboundHandler<ByteBuf> {
+
+    // for debugging purposes
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
+    
     private String srcId;
     private String dstId;
     private String blockId;
@@ -60,9 +67,14 @@ public class ClientHandler
         String hex = KeyUtils.byteArray2Hex(bin);
         byte [] hexBytes = hex.getBytes();
         int len = hexBytes.length / blockSz;
+        
+        logger.info("[rahul debug] [ClientHandler.processResp] keys (before): " + keys);
+        
         for(int k = 0; k < blockSz; ++k) {
             keys.add(new String(hexBytes, k*len, len));
         }
+
+        logger.info("[rahul debug] [ClientHandler.processResp] keys (after): " + keys);
     }
 
     @Override

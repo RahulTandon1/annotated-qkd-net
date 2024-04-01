@@ -22,7 +22,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 @Configuration
 public class QNLKeyReader {
     private static final Logger logger = LoggerFactory.getLogger(QNLKeyReader.class);
-
+    
+    // in key-flow: I think this gets run
     public String read(String src, String dest, Vector<String> keys,
                        String ip, int port, String poolBaseDir, int blockSz, int byteSz) throws Exception {
 
@@ -30,6 +31,7 @@ public class QNLKeyReader {
 
         logger.info("QNLKeyReader.read:" + src + "->" + dest + "," + ip + ":" + port + "," + poolBaseDir + "," + blockSz + "," + byteSz);
         try {
+            // connects to the localhost's QNL using IP and port from site.properties
             blockId = connect(src, dest, keys, ip, port, poolBaseDir, blockSz, byteSz);
             StringBuilder sb = new StringBuilder();
             sb.append(poolBaseDir).append("/").append(src).append("/").append(dest);

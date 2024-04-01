@@ -93,21 +93,21 @@ public class KeyPoolManager {
         String poolName;
         int index = (int)ind; // -1
         
-        System.err.println("[rahul debug]: fetchKey siteId= " + siteId + " inBlockID = " + inBlockId + " index " + index);
+        logger.info("[rahul debug]: fetchKey siteId= " + siteId + " inBlockID = " + inBlockId + " index " + index);
         
         if (index < 0) {
-            System.err.println("[rahul debug]: fetchKey: (index < 0)");
+            logger.info("[rahul debug]: fetchKey: (index < 0)");
             srcSiteId = localSiteId;
             dstSiteId = siteId;
         } else {
-            System.err.println("[rahul debug]: fetchKey: (index >= 0)");
+            logger.info("[rahul debug]: fetchKey: (index >= 0)");
             srcSiteId = siteId;
             dstSiteId = localSiteId;
         }
         // generate key at src = localSiteId
         poolName = srcSiteId + dstSiteId; //AB
 
-        logger.info("KeyPoolManager.fetchKey:" + srcSiteId + "->" + dstSiteId + ",index=" + ind);
+        logger.info("KeyPoolManager.fetchKey:" + srcSiteId + "->" + dstSiteId + ",index=" + ind); // B->A,index=-1
         if (containsPool(poolName)) {
             cipherKey = key(poolName, index);
         } else if (containsPoolLock(poolName) &&
@@ -146,6 +146,7 @@ public class KeyPoolManager {
                     }
                     cipherKey = key(poolName, index);
                 } else {
+                    logger.info("[rahul debug]: [fetchKey] inside 'fetching work' case.");
                     if (containsPoolLock(poolName)) {
                         poolLock = keyPoolLock(poolName);
                         poolLock.inProgress = true;
@@ -160,6 +161,8 @@ public class KeyPoolManager {
                     //do the fetching work
                     Vector<String> keyBlockDst = new Vector<>((int)blockSz);
                     try {
+                        // perform read from local QNL layer at qnl.ip, qnl.port
+                        // keyBlockDst will be edited after this call (pass by reference behaviour)
                         if (blockId == null && index == -1L)
                             blockId = keyReader.read(localSiteId,
                                                      siteId, keyBlockDst,

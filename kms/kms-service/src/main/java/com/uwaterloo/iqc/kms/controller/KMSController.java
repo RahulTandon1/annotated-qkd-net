@@ -40,11 +40,11 @@ public class KMSController {
 
         // currently policy.check returns true
         if (policy.check()) {
-            System.err.println("[rahul debug]: policy check returned true");
+            logger.info("[rahul debug]: policy check returned true");
             k = keyPoolMgr.newKey(name);
             printKey(k, true);
         } else {
-            System.err.println("[rahul debug]: policy check = false");
+            logger.info("[rahul debug]: policy check = false");
             k = new Key();
         }
         return k;
