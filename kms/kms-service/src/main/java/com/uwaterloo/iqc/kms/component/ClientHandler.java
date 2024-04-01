@@ -16,6 +16,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.ReadTimeoutException;
 
+// runs from the KMS as a Netty Client. Connects to a Netty server whose IP and port are given in resources/site.properties
 public class ClientHandler
     extends SimpleChannelInboundHandler<ByteBuf> {
 
@@ -48,9 +49,13 @@ public class ClientHandler
         QNLRequest req = new QNLRequest(blockByteSz);
         req.setOpId(QNLConstants.REQ_GET_ALLOC_KP_BLOCK);
         req.setSiteIds(srcId, dstId);
+        
+        logger.info("[rahul debug] [channelActive] request: " + req);
+        
         ctx.channel().writeAndFlush(req).addListener(
         new ChannelFutureListener() {
             public void operationComplete(ChannelFuture future) {
+                logger.info("[rahul debug] [channelActive] operation completed.");
                 if (future.isSuccess()) {
                     ctx.channel().read();
                 } else {
@@ -75,6 +80,7 @@ public class ClientHandler
         }
 
         logger.info("[rahul debug] [ClientHandler.processResp] keys (after): " + keys);
+        logger.info("[rahul debug]: [ClientHandler.processResp] response: " + resp);
     }
 
     @Override
