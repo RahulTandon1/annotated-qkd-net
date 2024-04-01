@@ -79,7 +79,9 @@ public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
             } catch (Exception e) {}
             ctx.channel().writeAndFlush(resp).addListener(
             new ChannelFutureListener() {
+                // run this method once the writeAndFlush completes.
                 public void operationComplete(ChannelFuture future) {
+                    // @rahul: should we log something here
                     if (future.isSuccess()) {
                         future.channel().close();
                     } else {

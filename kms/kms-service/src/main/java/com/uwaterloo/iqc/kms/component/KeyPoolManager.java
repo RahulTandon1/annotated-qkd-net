@@ -56,6 +56,7 @@ public class KeyPoolManager {
         return localSiteId;
     }
 
+    // walking through key-flow: siteId=B
     public Key newKey(String siteId) {
         Key key = null;
         if (siteId == null)
@@ -82,24 +83,29 @@ public class KeyPoolManager {
         return key;
     }
 
+    // fetchKey(siteId=B, null, -1L);
     private Key fetchKey(String siteId, String inBlockId, long ind) throws Exception {
-        String blockId = inBlockId;
+        String blockId = inBlockId; // null
         Key cipherKey = null;
         String srcSiteId;
         String dstSiteId;
         PoolLock poolLock;
         String poolName;
-        int index = (int)ind;
-
+        int index = (int)ind; // -1
+        
+        System.err.println("[rahul debug]: fetchKey siteId= " + siteId + " inBlockID = " + inBlockId + " index " + index);
+        
         if (index < 0) {
+            System.err.println("[rahul debug]: fetchKey: (index < 0)");
             srcSiteId = localSiteId;
             dstSiteId = siteId;
         } else {
+            System.err.println("[rahul debug]: fetchKey: (index >= 0)");
             srcSiteId = siteId;
             dstSiteId = localSiteId;
         }
-
-        poolName = srcSiteId + dstSiteId;
+        // generate key at src = localSiteId
+        poolName = srcSiteId + dstSiteId; //AB
 
         logger.info("KeyPoolManager.fetchKey:" + srcSiteId + "->" + dstSiteId + ",index=" + ind);
         if (containsPool(poolName)) {
@@ -205,8 +211,12 @@ public class KeyPoolManager {
         return (isPool && validKeys);
     }
 
+    // call will have index = -1
     private Key key(String poolName, int index) {
         if (index < 0)
+            
+            // keyPools.get(poolName) -> KeyPool
+            // we call the KeyPool's .getKey 
             return keyPools.get(poolName).getKey();
         else
             return keyPools.get(poolName).getKey(index);

@@ -37,10 +37,14 @@ public class KMSController {
     @RequestMapping("/newkey")
     public Key newKey(@RequestParam(value="siteid") String name) {
         Key k;
+
+        // currently policy.check returns true
         if (policy.check()) {
+            System.err.println("[rahul debug]: policy check returned true");
             k = keyPoolMgr.newKey(name);
             printKey(k, true);
         } else {
+            System.err.println("[rahul debug]: policy check = false");
             k = new Key();
         }
         return k;
