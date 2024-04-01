@@ -56,7 +56,6 @@ public class KeyPoolManager {
         return localSiteId;
     }
 
-    // walking through key-flow: siteId=B
     public Key newKey(String siteId) {
         Key key = null;
         if (siteId == null)
@@ -83,9 +82,8 @@ public class KeyPoolManager {
         return key;
     }
 
-    // fetchKey(siteId=B, null, -1L);
     private Key fetchKey(String siteId, String inBlockId, long ind) throws Exception {
-        String blockId = inBlockId; // null
+        String blockId = inBlockId;
         Key cipherKey = null;
         String srcSiteId;
         String dstSiteId;
@@ -104,8 +102,8 @@ public class KeyPoolManager {
             srcSiteId = siteId;
             dstSiteId = localSiteId;
         }
-        // generate key at src = localSiteId
-        poolName = srcSiteId + dstSiteId; //AB
+
+        poolName = srcSiteId + dstSiteId;
 
         logger.info("KeyPoolManager.fetchKey:" + srcSiteId + "->" + dstSiteId + ",index=" + ind); // B->A,index=-1
         if (containsPool(poolName)) {
@@ -214,12 +212,8 @@ public class KeyPoolManager {
         return (isPool && validKeys);
     }
 
-    // call will have index = -1
     private Key key(String poolName, int index) {
         if (index < 0)
-            
-            // keyPools.get(poolName) -> KeyPool
-            // we call the KeyPool's .getKey 
             return keyPools.get(poolName).getKey();
         else
             return keyPools.get(poolName).getKey(index);
